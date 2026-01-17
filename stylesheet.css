@@ -42,4 +42,19 @@ footer{
     padding: 10px;
     margin-top:200px;
 }
+#followUs {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.socialBtn {
+    display: block;
+    margin:6px 0;
+    background-color: darkgreen;
+    color: white;
+    border: 3px solid whitesmoke;
+    padding: 6px 16px;
+    border-radius: 8px;
+
+}
 
