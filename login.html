@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="stylesheet.css">
+    <title>Log in Page</title>
+</head>
+<body>
+
+
+<header>
+    <h1>Treasure Hunt - Select your game </h1>
+</header>
+<main>
+    <section class="card" id="hunt-select-section">
+        <h2>Choose your Treasure Hunt</h2>
+        <label for="hunt-select"> Available hunts: </label>
+        <select id="hunt-select">
+            <option value="">Treasure hunt 1 </option>
+            <option value="">Treasure hunt 2 </option>
+        </select>
+
+        <button id="start-button">Start Hunt</button>
+
+    </section>
+    <button id="refreshBtn" title="Refresh">Refresh</button>
+    <script>
+        document.getElementById("refreshBtn").onclick = () => location.reload();
+    </script>
+
+</main>
+</body>
+</html>

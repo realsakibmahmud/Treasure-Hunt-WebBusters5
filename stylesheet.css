@@ -3,6 +3,10 @@ body{
    rgba(0, 128, 0, 0.4),
    #ffffff,
    rgba(31, 32, 35, 0.7));
+
+);
+    background-repeat: no-repeat;
+    min-height: 100vh;
 }
 
 h1{
@@ -77,4 +81,21 @@ footer{
 
 p{
     margin: 10px 0;
+}
+
+#refreshBtn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: darkgreen;
+    color: white;
+    border: 3px solid whitesmoke;
+    padding: 8px 14px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+#refreshBtn:hover {
+    background-color: green;
 }
