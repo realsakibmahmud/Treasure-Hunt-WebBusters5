@@ -1,9 +1,8 @@
 body{
-   background-color: #89F336
-}
-
-header{
-
+   background: linear-gradient(to bottom,
+   rgba(0, 128, 0, 0.4),
+   #ffffff,
+   rgba(31, 32, 35, 0.7));
 }
 
 h1{
@@ -11,17 +10,19 @@ h1{
     margin-top:60px;
     color: green;
     font-size: 3em;
-    font-family: Papyrus;
+    font-family: sans-serif ;
+    text-shadow:2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 #introduction{  /*Welcome message*/
     text-align: center;
     font-size: 2em;
-    font-family: Papyrus;
+    font-family: sans-serif;
 }
 
 #team{ /*Names*/
-    border: 3px ridge darkred;
+    border: 2px solid black;
+    box-shadow: 0 10px 22px rgb(31, 32, 35);
     border-radius: 25px;
     box-shadow: 10px 10px gray;
     padding: 10px;
@@ -31,18 +32,18 @@ h1{
 }
 
 #rulesOfTheGames{
-    color:#780606;
+    color: #1f2023;
 }
 
 #startGame{ /*button*/
-    color:#780606;
+    color: #1f2023;
     border-radius:8px;
 }
 
 footer{
     text-align: center;
     border: 3px solid whitesmoke;
-    background-color: darkgreen;
+    background-color: rgba(0, 128, 0, 0.4);
     padding: 10px;
     margin-top:200px;
 }
@@ -52,7 +53,6 @@ footer{
 }
 
 .socialBtn {
-    display: block;
     margin:6px 0;
     background-color: darkgreen;
     color: white;
@@ -63,6 +63,18 @@ footer{
 }
 
 #startGame:hover{
-    font-size:14px
+    background-color: darkgreen;
+    color: white;
+    font-size:14px;
 
+}
+
+.socialBtn:hover{
+    background-color: darkgreen;
+    color: white;
+    font-size:14px;
+}
+
+p{
+    margin: 10px 0;
 }
