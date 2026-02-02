@@ -99,3 +99,13 @@ p{
 #refreshBtn:hover {
     background-color: green;
 }
+
+.Hunt-box1 {
+    border: 2px solid #2e7d32;   /* dark green border */
+    padding: 20px;
+    width: fit-content;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    margin-top: 20px;
+}
+

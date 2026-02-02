@@ -44,6 +44,7 @@
 </ul>
 
 <button  id="startGame" type="button"> Start the game</button>
+<button onclick="showHelp()">Help</button>
 
 <footer id="footer">
     <div id="FollowUs ">
@@ -66,6 +67,15 @@
     document.getElementById("startGame").onclick = function () {
         window.location.href = "login.html";
     };
+    function showHelp() {<!-- this we can modify or totaly remove later on (Ghaith) -->
+        alert(
+            "How to play:\n\n" +
+            "1. Click Start the game\n" +
+            "2. Log in with your username\n" +
+            "3. Answer the questions\n" +
+            "4. Each correct answer gives 10 points"
+        );
+    }
 </script>
 
 </body>
