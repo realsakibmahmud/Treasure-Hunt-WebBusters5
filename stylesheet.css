@@ -3,15 +3,13 @@ body{
    rgba(0, 128, 0, 0.4),
    #ffffff,
    rgba(31, 32, 35, 0.7));
-
-);
-    background-repeat: no-repeat;
     min-height: 100vh;
+    margin: 0;
 }
 
 h1{
     text-align:left;
-    margin-top:60px;
+    margin-top:0;
     color: green;
     font-size: 3em;
     font-family: sans-serif ;
@@ -19,7 +17,7 @@ h1{
 }
 
 #introduction{  /*Welcome message*/
-    text-align: center;
+    text-align: left;
     font-size: 2em;
     font-family: sans-serif;
 }
@@ -28,7 +26,6 @@ h1{
     border: 2px solid black;
     box-shadow: 0 10px 22px rgb(31, 32, 35);
     border-radius: 25px;
-    box-shadow: 10px 10px gray;
     padding: 10px;
     text-align: center;
     font-size:17px;
@@ -49,7 +46,7 @@ footer{
     border: 3px solid whitesmoke;
     background-color: rgba(0, 128, 0, 0.4);
     padding: 10px;
-    margin-top:200px;
+    margin-top:150px;
 }
 #followUs {
     text-align: left;
@@ -109,3 +106,12 @@ p{
     margin-top: 20px;
 }
 
+.page{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: transparent;
+}
