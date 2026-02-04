@@ -11,6 +11,7 @@ body{
     overflow: hidden;
     min-height: 100vh;
     margin: 0;
+    color: antiquewhite;
 }
 
 h1{
@@ -37,6 +38,7 @@ h1{
     text-align: center;
     font-size:15px;
     background-color: floralwhite;
+    color: black;
 }
 
 #rulesOfTheGames{
@@ -49,6 +51,11 @@ h1{
 #ruleslist{
     color:antiquewhite;
 }
+#Help:hover{
+    background-color: darkgreen;
+    color: white;
+    font-size:14px;
+}
 #startGame{ /*button*/
     color: #1f2023;
     border-radius:8px;
@@ -56,9 +63,8 @@ h1{
 }
 
 footer{
+    color:antiquewhite;
     text-align: center;
-    border: 3px solid whitesmoke;
-    background-color: rgba(144, 238, 144, 0.37);
     padding: 8px;
     margin-top: auto;
 }
@@ -71,15 +77,12 @@ footer{
     margin:6px 0;
     background-color: darkgreen;
     color: white;
-    border: 3px solid whitesmoke;
-    padding: 6px 16px;
-    border-radius: 8px;
 
 }
 
 #startGame:hover{
     background-color: darkgreen;
-    color: white;
+    color: #ffffff;
     font-size:14px;
 
 }
@@ -129,4 +132,8 @@ p{
     flex-direction: column;
     gap: 12px;
     background-color: transparent;
+}
+
+#info-section{
+    color:antiquewhite;
 }
