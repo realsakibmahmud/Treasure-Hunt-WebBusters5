@@ -11,27 +11,55 @@
         gtag('config', 'G-0YKCJYGY5Z');
     </script>
     <meta charset="UTF-8">
-    <title>app1</title>
     <link rel="stylesheet" href="stylesheet.css">
-
+    <title>Log in Page</title>
 </head>
 <body>
-<!--Google Analytics -->
+
 
 <header>
-    <h1>Welcome To The GhostBusters Tresure hunt  </h1>
+    <h1>Treasure Hunt - Select your game </h1>
 </header>
 <main>
+    <section class="card" id="hunt-select-section">
+        <div class="Hunt-box1">
+        <h2>Choose your Treasure Hunt</h2>
+        <label for="hunt-select"> Available hunts: </label>
+        <select id="hunt-select">
+            <option value="">Treasure hunt 1 </option>
+            <option value="">Treasure hunt 2 </option>
+        </select>
 
-    <section class="card" id="CRIDENTIALS">
-        <h2>Please enter your name to begin the game</h2>
-        <label for="player-name">Player name</label>
-        <input type="text" id="player-name" name="player-name" placeholder="Enter Player Name">
+        <button id="start-button">Start Hunt</button>
+        </div>
     </section>
+    <button id="refreshBtn" title="Refresh">Refresh</button>
 
+    <script>
+        document.getElementById("refreshBtn").onclick = () => location.reload();
+    </script>
 
+<section class="card" id="info-section">
+    <div class="Hunt-box1">
+    <h2>Game info </h2>
+    <p><strong>Score:</strong><span id="score"> 0 </span></p>
+    <p><strong> Time left:</strong><span id="time-left"> 00:00 </span></p>
+    <p><strong> Leaderboard position:</strong><span id="Scoreboard-position"> 00 </span></p>
+    </div>
+</section>
+
+    <section class="card" id="Leaderboard-section">
+        <div class="Hunt-box1">
+        <h2>Leaderboard</h2>
+            <class id="leaderboard-list"></class><!--  here i will ask mr nicos to help me make the scoreboard with cookies (Ghaith)-->
+        </div>
+    </section>
+    <script>
+        document.getElementById("start-button").onclick = function () {
+            window.location.href = "app.html";
+        };
+    </script>
 
 </main>
-
 </body>
 </html>
