@@ -84,6 +84,23 @@ Instascan.Camera.getCameras().then(function (cameras) {
     alert(e);
 });
 
+//switch to back camera on the phone
+function switchCamera() {
+    //Cycle through the available cameras:
+    if (cameraIndex < cameraArray.length - 1) {
+        cameraIndex++;
+    }
+    else {
+        cameraIndex = 0;
+    }
+
+    //Find the next camera to use:
+    let camera = cameraArray[cameraIndex];
+
+    //Start the new selected camera:
+    scanner.start(camera);
+}
+
 </script>
 
 </body>
