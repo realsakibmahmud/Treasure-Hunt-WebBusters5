@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Questions page</title>
+</head>
+<body>
+
+<script>
+//geolocation
+
+    function getLocation()
+    {
+        if (navigator.geolocation)
+        {
+            navigator.geolocation.getCurrentPosition(showPosition);
+
+        }
+        else
+        {
+            alert("Geolocation is not supported by your browser.");
+        }
+
+    }
+
+    function showPosition(position){
+        let latitude=position.coords.latitude
+        let longitude=position.coords.longitude
+        alert("Latitude:"+latitude+"Longitude:"+longitude);
+    }
+
+    getLocation();
+
+    fetch("https://codecyprus.org/th/api/location?session=WebBusters5&latitude=35.00814175237933&longitude=33.69703378839306")
+        .then(response => response.json())
+        .then(jsonObject => {
+            console.log(jsonObject);
+        });
+</script>
+
+</body>
+</html>
