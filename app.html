@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
+
+
+    <meta charset="UTF-8">
+    <title>App</title>
+
     <script src="cookies.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0YKCJYGY5Z"></script>
     <script>
@@ -11,42 +15,123 @@
 
         gtag('config', 'G-0YKCJYGY5Z');
     </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>app</title>
     <link rel="stylesheet" href="stylesheet.css">
 
 </head>
+
 <body>
-<!--Google Analytics -->
 
-<header>
-    <h1>Welcome To The WebBusters Treasure hunt  </h1>
+<button id="refreshBtn" title="Refresh">Refresh</button>
+<script>
+    document.getElementById("refreshBtn").onclick = () => location.reload();
+</script>
 
-</header>
-<main>
+<div class="Hunt-box1">
+<h1> All Challenges</h1>
+
+<label>
+<select id="challenges">
+<option value="">-- Choose a treasure hunt --</option>
+</select>
+</label>
 
 
+<script>
+    function getChallenges()
+    {
+        fetch("https://codecyprus.org/th/api/list")
+            .then(response => response.json()) //Parse JSON text to JavaScript object
+            .then(jsonObject => {
+                console.log(jsonObject);
+
+                let huntsArray = jsonObject.treasureHunts; //get the arrays
+
+                let list = document.getElementById("challenges"); //get the list
 
 
-</main>
+                for (let i = 0; i < huntsArray.length; i++) {
+                    let listItem = document.createElement('option'); //create bullets
+                    // let getuuid = huntsArray[i].uuid; //parameter to add in the url
 
-<footer id="footer">
+                    // listItem.innerHTML = "<a href='" + getuuid + "'> " + huntsArray[i].name + " </a>";
+                    listItem.setAttribute('value', huntsArray[i].uuid);
+                    listItem.textContent = huntsArray[i].name;
+                    list.appendChild(listItem);//options
+
+                }
+            });
+    }
+    getChallenges();
+
+</script>
+</div>
+
+
+<section class="card" id="CREDENTIALS">
+    <div class="Hunt-box1">
+        <h2>Please enter your name to begin the game</h2>
+        <label id=name-player for="player-name">Player name:</label>
+        <input type="text" id="player-name" name="player-name" placeholder="Enter Player Name">
+        <button type="button" id="submit">Submit</button>
+    </div>
+    <script>
+        document.getElementById("submit").addEventListener("click", function () {
+            const playerName = document.getElementById("player-name").value;
+            const challengesSelect = document.getElementById("challenges");
+            const selectedTreasureHuntUUID = challengesSelect.value;
+
+            console.log(selectedTreasureHuntUUID);
+            console.log(playerName);
+
+            setCookie("playerName", playerName);
+
+            const appName = "WebBusters5App"
+
+            fetch(`https://codecyprus.org/th/api/start?player=${playerName}&app=${appName}&treasure-hunt-id=${selectedTreasureHuntUUID}`).then(
+                response => response.json().then(jsonObject => {
+                   console.log(jsonObject);
+
+
+                    if (jsonObject.status === "OK") {
+                        setCookie("sessionId", jsonObject.session);
+                        window.location.href = "Questions.html";
+                    } else {
+                        alert("Error: " + (jsonObject.errorMessages ? jsonObject.errorMessages.join(", ") : "Could not start hunt"));
+                    }
+                })
+            );
+
+
+            // console.log(playerName);
+        });
+
+    </script>
+
+</section>
+
+
+<footer>
     <div id="FollowUs ">
-        <p>Follow us on:</p>
+    <p>Follow us on:</p>
 
-        <a href="https://www.instagram.com/web.busters5/" target="_blank">
-            <button class ="socialBtn">Instagram</button>
-        </a>
+    <a href="https://www.instagram.com/web.busters5/" target="_blank">
+        <button class ="socialBtn">Instagram</button>
+    </a>
 
-        <a href="https://www.instagram.com/web.busters5/" target="_blank">
-            <button class ="socialBtn">TikTok</button>
-        </a>
+    <a href="https://www.instagram.com/web.busters5/" target="_blank">
+        <button class ="socialBtn">TikTok</button>
+    </a>
 
-        <a href="https://x.com/Web_Busters5" target="_blank">
-            <button class ="socialBtn">Twitter</button>
-        </a>
+    <a href="https://x.com/Web_Busters5" target="_blank">
+        <button class ="socialBtn">Twitter</button>
+    </a>
     </div>
 </footer>
+
+
+
 </body>
 </html>
