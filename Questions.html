@@ -21,6 +21,8 @@
 
 const session=getCookie("sessionId");
 
+
+
 function getQuestions()
 {
     fetch(`https://codecyprus.org/th/api/question?session=${session}`)
@@ -46,7 +48,13 @@ function getQuestions()
                     input.type="number";
                     input.placeholder="Enter your answer";
                     giveAnswer.appendChild(input);
-                }
+                    const submitButton=document.createElement("button");
+                    submitButton.textContent="Check";
+                    submitButton.type="submit"
+                    giveAnswer.appendChild(submitButton);
+                    const answerByUser=document.getElementById("answer_text").value; //save answer to check it
+                    }
+
                 //BOOLEAN
                 if (jsonObject.questionType==="BOOLEAN")
                 {
@@ -68,7 +76,7 @@ function getQuestions()
                     giveAnswer.appendChild(input);
                 }
                 //MCQ
-                if (jsonObject.questionType==="NUMERIC")
+                if (jsonObject.questionType==="MCQ")
                 {
                     document.getElementById("question_text");
                     const giveAnswer=document.getElementById("answer_text");
@@ -87,12 +95,24 @@ function getQuestions()
                     input.placeholder="Enter your answer";
                     giveAnswer.appendChild(input);
                 }
+
             });
 }
 
 
 getQuestions();
 
+function getAnswers()
+{
+    fetch(`https://codecyprus.org/th/api/answer?session=${session}`)
+        .then(response => response.json())
+        .then(jsonObject => {
+            console.log(jsonObject);
+
+        });
+}
+
+getAnswers();
 
 
 
