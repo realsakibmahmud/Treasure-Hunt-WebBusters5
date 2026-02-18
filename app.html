@@ -92,10 +92,11 @@
 
             fetch(`https://codecyprus.org/th/api/start?player=${playerName}&app=${appName}&treasure-hunt-id=${selectedTreasureHuntUUID}`).then(
                 response => response.json().then(jsonObject => {
-                   console.log(jsonObject);
+                    console.log(jsonObject);
 
 
                     if (jsonObject.status === "OK") {
+
                         setCookie("sessionId", jsonObject.session);
                         window.location.href = "Questions.html";
                     } else {
