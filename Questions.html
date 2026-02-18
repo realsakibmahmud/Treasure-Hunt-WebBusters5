@@ -14,6 +14,7 @@
 <h1> Treasure Hunt Questions</h1>
 <div id="question_container">
     <p id="question_text"> Loading question </p>
+    <p id="answer_text"> Loading answer </p>
 
 </div>
 <script>
@@ -29,18 +30,30 @@ function getQuestions()
 
                 if (jsonObject.status === "OK")
                 {
-                    const question = jsonObject.questionText;
+                    const question = jsonObject.questionText.split("<br>")[0].trim(); //read up to the <br>
                     document.getElementById("question_text").textContent = question;
                 }
                 else
                 {
                     document.getElementById("question_text").textContent ="No questions found!";
                 }
+                if (jsonObject.questionType==="INTEGER")
+                {
+                    document.getElementById("question_text");
+                    const giveAnswer=document.getElementById("answer_text");
+                   const input= document.createElement("input");
+                    input.type="number";
+                    input.placeholder="Enter your answer";
+                    giveAnswer.appendChild(input);
+                }
             });
 }
 
 
 getQuestions();
+
+
+
 
 
 
