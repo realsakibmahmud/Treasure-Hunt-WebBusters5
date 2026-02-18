@@ -37,12 +37,53 @@ function getQuestions()
                 {
                     document.getElementById("question_text").textContent ="No questions found!";
                 }
+                //INTEGER
                 if (jsonObject.questionType==="INTEGER")
                 {
                     document.getElementById("question_text");
                     const giveAnswer=document.getElementById("answer_text");
                    const input= document.createElement("input");
                     input.type="number";
+                    input.placeholder="Enter your answer";
+                    giveAnswer.appendChild(input);
+                }
+                //BOOLEAN
+                if (jsonObject.questionType==="BOOLEAN")
+                {
+                    document.getElementById("question_text");
+                    const giveAnswer=document.getElementById("answer_text");
+                    const input= document.createElement("input");
+                    input.type="boolean";
+                    input.placeholder="Enter your answer";
+                    giveAnswer.appendChild(input);
+                }
+                //NUMERIC
+                if (jsonObject.questionType==="NUMERIC")
+                {
+                    document.getElementById("question_text");
+                    const giveAnswer=document.getElementById("answer_text");
+                    const input= document.createElement("input");
+                    input.type="number";
+                    input.placeholder="Enter your answer";
+                    giveAnswer.appendChild(input);
+                }
+                //MCQ
+                if (jsonObject.questionType==="NUMERIC")
+                {
+                    document.getElementById("question_text");
+                    const giveAnswer=document.getElementById("answer_text");
+                    const input= document.createElement("input");
+                    input.type="number";
+                    input.placeholder="Enter your answer";
+                    giveAnswer.appendChild(input);
+                }
+                //TEXT
+                if (jsonObject.questionType==="TEXT")
+                {
+                    document.getElementById("question_text");
+                    const giveAnswer=document.getElementById("answer_text");
+                    const input= document.createElement("input");
+                    input.type="text";
                     input.placeholder="Enter your answer";
                     giveAnswer.appendChild(input);
                 }
