@@ -9,12 +9,14 @@
 <body>
 
 <video id="preview"></video>
-<div style="margin: 20px; padding: 20px; background-color: black; color: white; text-align: center;" id="content"></div>
+<!-- for QR code-->
+<!--<div style="margin: 20px; padding: 20px; background-color: black; color: white; text-align: center;" id="content"></div>-->
 
 <h1> Treasure Hunt Questions</h1>
 <div id="question_container">
-    <p id="question_text"> Loading question </p>
-    <p id="answer_text"> Loading answer </p>
+    <p id="question_text"> Loading question </p> <br>
+    <p id="answer_text"> Loading answer </p> <br>
+    <p id="feedback_text"> Loading feedback </p>
 
 </div>
 <script>
@@ -30,89 +32,107 @@ function getQuestions()
             .then(jsonObject => {
                 console.log(jsonObject);
 
-                if (jsonObject.status === "OK")
+                let displayQuestion=document.getElementById("question_text");
+                let giveAnswer = document.getElementById("answer_text");
+
+                giveAnswer.innerHTML=""; //clear previous input
+
+
+                if (jsonObject.status !== "OK")
                 {
-                    const question = jsonObject.questionText.split("<br>")[0].trim(); //read up to the <br>
-                    document.getElementById("question_text").textContent = question;
+                    displayQuestion.textContent = "No questions found!";
                 }
                 else
                 {
-                    document.getElementById("question_text").textContent ="No questions found!";
-                }
+                   displayQuestion.textContent = jsonObject.questionText.split("<br>")[0].trim(); //read up to the <br>
+                    const input = document.createElement("input");
+                    input.id= "answer"; //we need a way to pass it to the check function
+
                 //INTEGER
-                if (jsonObject.questionType==="INTEGER")
+                if (jsonObject.questionType === "INTEGER")
                 {
-                    document.getElementById("question_text");
-                    const giveAnswer=document.getElementById("answer_text");
-                   const input= document.createElement("input");
-                    input.type="number";
-                    input.placeholder="Enter your answer";
-                    giveAnswer.appendChild(input);
-                    const submitButton=document.createElement("button");
-                    submitButton.textContent="Check";
-                    submitButton.type="submit"
-                    giveAnswer.appendChild(submitButton);
-                    const answerByUser=document.getElementById("answer_text").value; //save answer to check it
-                    }
+                    input.type = "number";
+                    input.placeholder = "Enter your answer";
+                }
 
                 //BOOLEAN
-                if (jsonObject.questionType==="BOOLEAN")
+                if (jsonObject.questionType === "BOOLEAN")
                 {
-                    document.getElementById("question_text");
-                    const giveAnswer=document.getElementById("answer_text");
-                    const input= document.createElement("input");
-                    input.type="boolean";
-                    input.placeholder="Enter your answer";
-                    giveAnswer.appendChild(input);
+                    input.type = "text";
+                    input.placeholder = "Enter your answer";
+
                 }
                 //NUMERIC
-                if (jsonObject.questionType==="NUMERIC")
+                if (jsonObject.questionType === "NUMERIC")
                 {
                     document.getElementById("question_text");
-                    const giveAnswer=document.getElementById("answer_text");
-                    const input= document.createElement("input");
-                    input.type="number";
-                    input.placeholder="Enter your answer";
-                    giveAnswer.appendChild(input);
+                    input.type = "number";
+                    input.placeholder = "Enter your answer";
+
                 }
                 //MCQ
-                if (jsonObject.questionType==="MCQ")
+                if (jsonObject.questionType === "MCQ")
                 {
-                    document.getElementById("question_text");
-                    const giveAnswer=document.getElementById("answer_text");
-                    const input= document.createElement("input");
-                    input.type="number";
-                    input.placeholder="Enter your answer";
-                    giveAnswer.appendChild(input);
+                    input.type = "number";
+                    input.placeholder = "Enter your answer";
+
                 }
                 //TEXT
-                if (jsonObject.questionType==="TEXT")
+                if (jsonObject.questionType === "TEXT")
                 {
-                    document.getElementById("question_text");
-                    const giveAnswer=document.getElementById("answer_text");
-                    const input= document.createElement("input");
-                    input.type="text";
-                    input.placeholder="Enter your answer";
-                    giveAnswer.appendChild(input);
+                    input.type = "text";
+                    input.placeholder = "Enter your answer";
+
                 }
+
+                giveAnswer.appendChild(input);
+
+                const submitButton = document.createElement("button");
+                submitButton.textContent = "Check";
+                submitButton.type="submit";
+                submitButton.onclick = submitAnswers;
+                giveAnswer.appendChild(submitButton);
+            }
+
+                // const answerByThePlayer=document.getElementById("answer_text").value;
+                // setCookie("answerByThePlayer", answerByThePlayer);
 
             });
 }
 
 
-getQuestions();
+getQuestions(); //call the function to display the answers
 
-function getAnswers()
+//const playersAnswers=document.getElementById("answer_text").value;
+
+
+
+function submitAnswers()
 {
-    fetch(`https://codecyprus.org/th/api/answer?session=${session}`)
+ let playersAnswers=document.getElementById("answer").value;
+
+    fetch(`https://codecyprus.org/th/api/answer?session=${session}&answer=${playersAnswers}`)
         .then(response => response.json())
         .then(jsonObject => {
             console.log(jsonObject);
 
+            //check
+            const feedback=document.getElementById("feedback_text");
+
+
+            if(jsonObject.status === "OK")
+            {
+                if(jsonObject.status === true)
+                feedback.textContent="Correct answer!"
+
+                //call the questions function when answer is correct
+                getQuestions();
+
+            }
         });
 }
 
-getAnswers();
+submitAnswers();
 
 
 
