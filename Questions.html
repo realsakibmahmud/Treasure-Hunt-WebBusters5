@@ -79,7 +79,7 @@ function getQuestions()
                 //MCQ
                 if (jsonObject.questionType === "MCQ")
                 {
-                    input.type = "selcet";
+                    input.type = "select";
                     input.placeholder = "Enter your answer";
 
                 }
@@ -90,6 +90,7 @@ function getQuestions()
                     input.placeholder = "Enter your answer";
 
                 }
+
 
                 giveAnswer.appendChild(input);
 
@@ -155,14 +156,15 @@ function submitAnswers()
             //     showLeaderboard(); //show score after questions are finished
             // }
 
-            getLocation();
+            // getLocation();
             if (jsonObject.requiresLocation === true)
             {
                 input.type = "text";
                 input.placeholder = "Enter your answer";
                 getLocation();
-                showPosition();
             }
+
+
 
             //qr code for hint
 
@@ -205,22 +207,27 @@ function showLeaderboard() {
 
             //geolocation
 
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
-    }
-    else {
+function sendLocationAndAnswerQuestion() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        }
+        else {
         alert("Geolocation is not supported by your browser.");
     }
 }
+
 function showPosition(position) {
     alert("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
     fetch(`https://codecyprus.org/th/api/location?session=${session}&latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`)
         .then(response => response.json())
         .then(jsonObject => {
-            console.log(jsonObject);
+           if (jsonObject.status === "OK") {
+               //TODO - Submit answer!
+           }
+           else {
+               alert(jsonObject.message); //todo correct??
+           }
         });
-
 }
 
 
