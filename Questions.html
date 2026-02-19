@@ -73,7 +73,7 @@ function getQuestions()
                 //MCQ
                 if (jsonObject.questionType === "MCQ")
                 {
-                    input.type = "number";
+                    input.type = "text";
                     input.placeholder = "Enter your answer";
 
                 }
@@ -109,7 +109,7 @@ getQuestions(); //call the function to display the answers
 
 function submitAnswers()
 {
- let playersAnswers=document.getElementById("answer").value;
+    let playersAnswers=document.getElementById("answer").value;
 
     fetch(`https://codecyprus.org/th/api/answer?session=${session}&answer=${playersAnswers}`)
         .then(response => response.json())
@@ -123,7 +123,7 @@ function submitAnswers()
             if(jsonObject.status === "OK")
             {
                 if(jsonObject.status === true)
-                feedback.textContent="Correct answer!"
+                    feedback.textContent="Correct answer!"
 
                 //call the questions function when answer is correct...
                 getQuestions();
@@ -133,8 +133,6 @@ function submitAnswers()
 }
 
 submitAnswers();
-
-
 
 
 
