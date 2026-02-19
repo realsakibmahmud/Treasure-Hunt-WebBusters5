@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Questions page</title>
+    <link rel="stylesheet" href="stylesheet.css">
     <script src="js/instascan.min.js"></script>
     <script src="cookies.js"></script>
 </head>
@@ -154,12 +155,14 @@ function submitAnswers()
                 window.location.href = "leaderboard.html";
             }
 
-
-
-            //if(jsonObject.requiresLocation===true)
-            //{
-            //code for geolocation
-            // }
+            getLocation();
+            if (jsonObject.requiresLocation === true)
+            {
+                input.type = "text";
+                input.placeholder = "Enter your answer";
+                getLocation();
+                showPosition();
+            }
 
             //qr code for hint
 
@@ -202,30 +205,25 @@ function showLeaderboard() {
 
             //geolocation
 
-            // function getLocation() {
-            //     if (navigator.geolocation) {
-            //         navigator.geolocation.getCurrentPosition(showPosition);
-            //
-            //     } else {
-            //         alert("Geolocation is not supported by your browser.");
-            //     }
-            //
-            // }
-            //
-            // function showPosition(position) {
-            //     let latitude = position.coords.latitude
-            //     let longitude = position.coords.longitude
-            //     alert("Latitude:" + latitude + "Longitude:" + longitude);
-            // }
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    }
+    else {
+        alert("Geolocation is not supported by your browser.");
+    }
+}
+function showPosition(position) {
+    alert("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
+    fetch(`https://codecyprus.org/th/api/location?session=${session}&latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`)
+        .then(response => response.json())
+        .then(jsonObject => {
+            console.log(jsonObject);
+        });
 
-//             getLocation();
-//
-//             fetch("https://codecyprus.org/th/api/location?session=WebBusters5&latitude=35.00814175237933&longitude=33.69703378839306")
-//                 .then(response => response.json())
-//                 .then(jsonObject => {
-//                     console.log(jsonObject);
-//                 });
-//
+}
+
+
 // //QR code reader
 //             var opts = {
 //                 // Whether to scan continuously for QR codes. If false, use scanner.scan() to
