@@ -28,7 +28,9 @@
 
 
 const session=getCookie("sessionId");
-
+let requiresLocationQuestion = false;
+let locationSentQuestion = false;
+let pendingAnswer = " ";
 
 
 function getQuestions()
@@ -37,6 +39,9 @@ function getQuestions()
         .then(response => response.json())
             .then(jsonObject => {
                 console.log(jsonObject);
+
+                requiresLocationQuestion = (jsonObject.requiresLocation === true);
+                locationSentQuestion= false;
 
                 let displayQuestion=document.getElementById("question_text");
                 let giveAnswer = document.getElementById("answer_text");
@@ -129,7 +134,12 @@ getQuestions(); //call the function to display the answers
 function submitAnswers()
 {
     let playersAnswers=document.getElementById("answer").value;
+    pendingAnswer=playersAnswers;
 
+    if(requiresLocationQuestion && !locationSentQuestion){
+        sendLocationAndAnswerQuestion();
+        return;
+    }
     fetch(`https://codecyprus.org/th/api/answer?session=${session}&answer=${playersAnswers}`)
         .then(response => response.json())
         .then(jsonObject => {
@@ -156,15 +166,6 @@ function submitAnswers()
                 window.location.href = "leaderboard.html";
             }
 
-            // getLocation();
-            if (jsonObject.requiresLocation === true)
-            {
-                input.type = "text";
-                input.placeholder = "Enter your answer";
-                getLocation();
-            }
-
-
 
             //qr code for hint
 
@@ -173,8 +174,6 @@ function submitAnswers()
           // }
         });
 }
-
-submitAnswers();
 
 //skip
 function skipQuestion()
@@ -222,10 +221,11 @@ function showPosition(position) {
         .then(response => response.json())
         .then(jsonObject => {
            if (jsonObject.status === "OK") {
-               //TODO - Submit answer!
+               locationSentQuestion = true;
+               submitAnswers();
            }
            else {
-               alert(jsonObject.message); //todo correct??
+               alert(jsonObject.message);
            }
         });
 }
