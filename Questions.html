@@ -151,10 +151,10 @@ function submitAnswers()
             {
                 getQuestions();
             }
-            // else
-            // {
-            //     showLeaderboard(); //show score after questions are finished
-            // }
+            else
+            {
+                window.location.href = "leaderboard.html";
+            }
 
             // getLocation();
             if (jsonObject.requiresLocation === true)
