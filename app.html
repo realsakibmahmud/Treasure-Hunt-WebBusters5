@@ -24,6 +24,7 @@
 
 <body>
 
+
 <button id="refreshBtn" title="Refresh">Refresh</button>
 <script>
     document.getElementById("refreshBtn").onclick = () => location.reload();
@@ -40,6 +41,8 @@
 
 
 <script>
+
+     const score=0; //initialise points of the player to 0
     function getChallenges()
     {
         fetch("https://codecyprus.org/th/api/list")
