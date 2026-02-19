@@ -18,8 +18,10 @@
     <p id="answer_text"> Loading answer </p> <br>
     <p id="feedback_text"> Loading feedback </p>
 
+
 </div>
 <script>
+
 
 const session=getCookie("sessionId");
 
@@ -92,8 +94,13 @@ function getQuestions()
                 submitButton.type="submit";
                 submitButton.onclick = submitAnswers;
                 giveAnswer.appendChild(submitButton);
-            }
 
+                const skipButton = document.createElement("button");
+                skipButton.textContent = "Skip Question";
+                skipButton.type="button";
+                skipButton.onclick = skipQuestion;
+                giveAnswer.appendChild(skipButton);
+                }
                 // const answerByThePlayer=document.getElementById("answer_text").value;
                 // setCookie("answerByThePlayer", answerByThePlayer);
 
@@ -118,22 +125,56 @@ function submitAnswers()
 
             //display the message
             const feedback=document.getElementById("feedback_text");
+            feedback.innerHTML=""; //clear previous input
 
 
-            if(jsonObject.status === "OK")
-            {
-                if(jsonObject.status === true)
-                    feedback.textContent="Correct answer!"
+             if(jsonObject.status === "OK")
+             {
+                 feedback.textContent=jsonObject.message;
+             }
 
-                //call the questions function when answer is correct...
+
+                //call the questions function when there are more questions
+            if(jsonObject.completed===false) {
                 getQuestions();
-
             }
+
+             if (jsonObject.canBeSkipped===true)
+             {
+                 skipQuestion();
+             }
+             else
+             {
+                 alert("Question cannot be skipped!");
+
+            //if(jsonObject.requiresLocation===true)
+            //{
+            //code for geolocation
+            // }
+
+            //qr code for hint
+
+
+
+           }
         });
 }
 
 submitAnswers();
 
+//skip
+function skipQuestion()
+    {
+
+        fetch(`https://codecyprus.org/th/api/skip?session=${session}`)
+            .then(response => response.json())
+            .then(jsonObject => {
+                console.log(jsonObject);
+
+                    getQuestions();
+            });
+
+}
 
 
 
