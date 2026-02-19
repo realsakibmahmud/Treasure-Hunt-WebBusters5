@@ -18,10 +18,11 @@
     <p id="answer_text"> Loading answer </p> <br>
     <p id="feedback_text"> Loading feedback </p>
     <p id="score_text"> Loading score </p>
-    <p id="leaderBoard_text"> Leader Board position</p>
 
 
 </div>
+
+<div id="leaderBoard_container"></div>
 <script>
 
 
@@ -106,6 +107,13 @@ function getQuestions()
                 // const answerByThePlayer=document.getElementById("answer_text").value;
                 // setCookie("answerByThePlayer", answerByThePlayer);
 
+               // if (jsonObject.canBeSkipped===true)
+               //  {
+               //      skipQuestion();
+               //  }
+               //  else{
+               //      alert("Question cannot be skipped!");
+               //  }
             });
 }
 
@@ -127,7 +135,7 @@ function submitAnswers()
 
             //display the message
             const feedback=document.getElementById("feedback_text");
-            feedback.innerHTML=""; //clear previous input
+            //feedback.innerHTML=""; //clear previous input
 
 
              if(jsonObject.status === "OK")
@@ -141,18 +149,12 @@ function submitAnswers()
             {
                 getQuestions();
             }
-            else
-            {
-                showLeaderboard(); //show score after questions are finished
-            }
+            // else
+            // {
+            //     showLeaderboard(); //show score after questions are finished
+            // }
 
-             if (jsonObject.canBeSkipped===true)
-             {
-                 skipQuestion();
-             }
-             else
-             {
-                 alert("Question cannot be skipped!");
+
 
             //if(jsonObject.requiresLocation===true)
             //{
@@ -163,7 +165,7 @@ function submitAnswers()
 
 
 
-           }
+          // }
         });
 }
 
@@ -190,9 +192,10 @@ function showLeaderboard() {
         .then(jsonObject => {
             console.log(jsonObject);
 
-           const player=getCookie("playerName");
-           const showPosition=document.getElementById("leaderBoard_text");
-           showPosition.textContent=player.name; //+score
+
+           const showPosition=document.getElementById("leaderBoard_container");
+           showPosition.innerHTML="";
+           showPosition.textContent=jsonObject.player+jsonObject.score; //+score
 
         });
 }
