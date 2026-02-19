@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeaderBoard</title>
+    <script src="cookies.js"></script>
+</head>
+<body>
+
+<div id="leaderBoard_container">
+
+</div>
+
+<h1> Leader Board:</h1>
+<script>
+
+    const session=getCookie("sessionId");
+function showLeaderboard() {
+fetch(`https://codecyprus.org/th/api/leaderboard?session=${session}&sorted&limit=10`)
+.then(response => response.json())
+.then(jsonObject => {
+console.log(jsonObject);
+
+
+// const showPosition=document.getElementById("leaderBoard_container");
+//  showPosition.innerHTML="";
+//
+//  let leaderBoardArray= jsonObject.leadboard;
+//
+//  for (let i=0; leaderBoardArray.length; i++) {
+//      showPosition.textContent = jsonObject.leaderboard
+//
+//
+//  }
+});
+}
+
+showLeaderboard();
+</script>
+</body>
+</html>
