@@ -17,6 +17,8 @@
     <p id="question_text"> Loading question </p> <br>
     <p id="answer_text"> Loading answer </p> <br>
     <p id="feedback_text"> Loading feedback </p>
+    <p id="score_text"> Loading score </p>
+    <p id="leaderBoard_text"> Leader Board position</p>
 
 
 </div>
@@ -135,8 +137,13 @@ function submitAnswers()
 
 
                 //call the questions function when there are more questions
-            if(jsonObject.completed===false) {
+            if(jsonObject.completed===false)
+            {
                 getQuestions();
+            }
+            else
+            {
+                showLeaderboard(); //show score after questions are finished
             }
 
              if (jsonObject.canBeSkipped===true)
@@ -176,8 +183,19 @@ function skipQuestion()
 
 }
 
+//leaderboard
+function showLeaderboard() {
+    fetch(`https://codecyprus.org/th/api/leaderboard?session=${session}&sorted&limit=10`)
+        .then(response => response.json())
+        .then(jsonObject => {
+            console.log(jsonObject);
 
+           const player=getCookie("playerName");
+           const showPosition=document.getElementById("leaderBoard_text");
+           showPosition.textContent=player.name; //+score
 
+        });
+}
 
             //geolocation
 
