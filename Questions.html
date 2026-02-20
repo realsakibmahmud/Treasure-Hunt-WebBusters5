@@ -19,7 +19,8 @@
     <p id="answer_text"> Loading answer </p> <br>
     <p id="feedback_text"> Loading feedback </p>
     <p id="score_text"> Loading score </p>
-
+    <h1> Your Score:</h1>
+    <div id="score_container"> </div>
 
 </div>
 
@@ -127,7 +128,20 @@ function getQuestions()
 
 getQuestions(); //call the function to display the answers
 
-//const playersAnswers=document.getElementById("answer_text").value;
+//player's score
+function showPlayerScore()
+{
+    fetch(`https://codecyprus.org/th/api/score?session=${session}`)
+        .then(response => response.json())
+        .then(jsonObject => {
+            console.log(jsonObject);
+
+            let score=document.getElementById('score_container');
+            score.innerHTML=jsonObject.score;
+
+
+        });
+}
 
 
 
@@ -166,7 +180,7 @@ function submitAnswers()
                 window.location.href = "leaderboard.html";
             }
 
-
+            showPlayerScore();
             //qr code for hint
 
 
@@ -189,20 +203,6 @@ function skipQuestion()
 
 }
 
-//leaderboard
-function showLeaderboard() {
-    fetch(`https://codecyprus.org/th/api/leaderboard?session=${session}&sorted&limit=10`)
-        .then(response => response.json())
-        .then(jsonObject => {
-            console.log(jsonObject);
-
-
-           const showPosition=document.getElementById("leaderBoard_container");
-           showPosition.innerHTML="";
-           showPosition.textContent=jsonObject.player+jsonObject.score; //+score
-
-        });
-}
 
             //geolocation
 
