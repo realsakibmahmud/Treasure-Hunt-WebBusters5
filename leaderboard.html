@@ -7,35 +7,61 @@
 </head>
 <body>
 
-<div id="leaderBoard_container">
 
-</div>
+
+<h1> Your Score:</h1>
+<div id="score_container"> </div>
+
 
 <h1> Leader Board:</h1>
+<div id="leaderBoard_container"></div>
 <script>
 
     const session=getCookie("sessionId");
     console.log(session);
+
+
+function showPlayerScore()
+{
+    fetch(`https://codecyprus.org/th/api/score?session=${session}`)
+        .then(response => response.json())
+        .then(jsonObject => {
+            console.log(jsonObject);
+
+            let score=document.getElementById('score_container');
+            score.innerHTML=jsonObject.score;
+
+
+        });
+}
+
+showPlayerScore();
 
 function showLeaderBoard() {
     fetch(`https://codecyprus.org/th/api/leaderboard?session=${session}&sorted&limit=10`)
         .then(response => response.json())
         .then(jsonObject => {
             console.log(jsonObject);
+
+
+ const showPosition=document.getElementById("leaderBoard_container");
+ showPosition.innerHTML="";
+
+ let leaderBoardArray= jsonObject.leadboard;
+ for (let i=0; leaderBoardArray.length; i++) {
+     let position=document.createElement("p");
+     position.innerHTML=leaderBoardArray[i].player;
+     showPosition.appendChild(position);
+
+ }
+
+
+
+  //}
         });
 }
 
 
-const showPosition=document.getElementById("leaderBoard_container");
- showPosition.innerHTML="";
-
- let leaderBoardArray= jsonObject.leadboard;
-
-  for (let i=0; leaderBoardArray.length; i++) {
-     showPosition.textContent = jsonObject.leaderboard[i];
-
-
- }
 
 showLeaderBoard();
 </script>
