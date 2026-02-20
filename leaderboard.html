@@ -37,27 +37,24 @@ function showPlayerScore()
 
 showPlayerScore();
 
-function showLeaderBoard() {
+
+function showLeaderBoard()
+{
     fetch(`https://codecyprus.org/th/api/leaderboard?session=${session}&sorted&limit=10`)
         .then(response => response.json())
         .then(jsonObject => {
             console.log(jsonObject);
 
+     let leaderBoardArray= jsonObject.leaderboard;
+     let showPosition=document.getElementById("leaderBoard_container");
+     showPosition.innerHTML="";
+     for (let i=0; leaderBoardArray.length; i++)
+             {
+                 let position=document.createElement("p");
+                 position.innerHTML=leaderBoardArray[i].player+" ->  "+leaderBoardArray[i].score;
+                 showPosition.appendChild(position);
 
- const showPosition=document.getElementById("leaderBoard_container");
- showPosition.innerHTML="";
-
- let leaderBoardArray= jsonObject.leadboard;
- for (let i=0; leaderBoardArray.length; i++) {
-     let position=document.createElement("p");
-     position.innerHTML=leaderBoardArray[i].player;
-     showPosition.appendChild(position);
-
- }
-
-
-
-  //}
+             }
         });
 }
 
