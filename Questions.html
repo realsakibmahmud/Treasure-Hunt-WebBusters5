@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Questions page</title>
     <link rel="stylesheet" href="stylesheet.css">
     <script src="js/instascan.min.js"></script>
@@ -127,7 +128,7 @@ function getQuestions()
 
 
 getQuestions(); //call the function to display the answers
-
+showPlayerScore();
 //player's score
 function showPlayerScore()
 {
@@ -180,7 +181,8 @@ function submitAnswers()
                 window.location.href = "leaderboard.html";
             }
 
-            showPlayerScore();
+            // showPlayerScore();
+            setTimeout(showPlayerScore, 300);
             //qr code for hint
 
 
@@ -199,6 +201,8 @@ function skipQuestion()
                 console.log(jsonObject);
 
                     getQuestions();
+
+                    setTimeout(showPlayerScore, 300);
             });
 
 }
@@ -299,6 +303,25 @@ function showPosition(position) {
 
 
 </script>
+
+
+<footer id="footer">
+    <div id="FollowUs ">
+        <p>Follow us on:</p>
+
+        <a href="https://www.instagram.com/web.busters5/" target="_blank">
+            <button class ="socialBtn">Instagram</button>
+        </a>
+
+        <a href="https://www.instagram.com/web.busters5/" target="_blank">
+            <button class ="socialBtn">TikTok</button>
+        </a>
+
+        <a href="https://x.com/Web_Busters5" target="_blank">
+            <button class ="socialBtn">Twitter</button>
+        </a>
+    </div>
+</footer>
 
 </body>
 </html>
