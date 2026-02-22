@@ -10,9 +10,11 @@
 </head>
 <body>
 
-<video id="preview"></video>
-<!-- for QR code-->
-<!--<div style="margin: 20px; padding: 20px; background-color: black; color: white; text-align: center;" id="content"></div>-->
+<video id="preview" width="420" height="300" autoplay muted playsinline ></video>
+
+<div style="margin: 20px; padding: 20px; background-color: black; color: white; text-align: center;" id="content">
+    Scan a QR code to get a hint...
+</div>
 
 <h1> Treasure Hunt Questions</h1>
 <div id="question_container">
@@ -33,6 +35,8 @@ const session=getCookie("sessionId");
 let requiresLocationQuestion = false;
 let locationSentQuestion = false;
 let pendingAnswer = " ";
+let cameraArray = [];
+let cameraIndex = 0;
 
 
 function getQuestions()
@@ -235,70 +239,77 @@ function showPosition(position) {
 }
 
 
-// //QR code reader
-//             var opts = {
-//                 // Whether to scan continuously for QR codes. If false, use scanner.scan() to
-//                 // manually scan. If true, the scanner emits the "scan" event when a QR code is
-//                 // scanned. Default true.
-//                 continuous: true, // The HTML element to use for the camera's video preview. Must be a <video>
-//                 // element. When the camera is active, this element will have the "active" CSS
-//                 // class, otherwise, it will have the "inactive" class. By default, an invisible
-//                 // element will be created to host the video.
-//                 video: document.getElementById('preview'),
-//                 // Whether to horizontally mirror the video preview. This is helpful when trying to
-//                 // scan a QR code with a user-facing camera. Default true.
-//                 mirror: true,
-//                 // Whether to include the scanned image data as part of the scan result. See the
-//                 // "scan" event for image format details. Default false.
-//                 captureImage: false,
-//                 // Only applies to continuous mode. Whether to actively scan when the tab is not
-//                 // active.
-//                 // When false, this reduces CPU usage when the tab is not active. Default true.
-//                 backgroundScan: true,
-//                 // Only applies to continuous mode. The period, in milliseconds, before the same QR
-//                 // code will be recognized in succession. Default 5000 (5 seconds).
-//                 refractoryPeriod: 5000,
-//                 // Only applies to continuous mode. The period, in rendered frames, between scans. A
-//                 // lower scan period increases CPU usage but makes scan response faster.
-//                 // Default 1 (i.e. analyze every frame).
-//                 scanPeriod: 1
-//             };
-//
-// //The scanner listener - when a code is scanned, do something:
-//             let scanner = new Instascan.Scanner(opts);
-//             scanner.addListener('scan', function (content) {
-//                 console.log(content);
-//                 document.getElementById("content").innerHTML = content;
-//             });
-//
-// //Initialize the cameras:
-//             Instascan.Camera.getCameras().then(function (cameras)
-//             {
-//                 scanner.start(cameras[0]); //Start the default camera
-//             }
-//             ).catch(function (e) {
-//                 alert(e);
-//             });
-//
-// //switch to back camera on the phone
-//             function switchCamera()
-//             {
-//                 //Cycle through the available cameras:
-//                 if (cameraIndex < cameraArray.length - 1)
-//                 {
-//                     cameraIndex++;
-//                 }
-//                 else
-//                 {
-//                     cameraIndex = 0;
-//                 }
-//
-//                 //Find the next camera to use:
-//                 let camera = cameraArray[cameraIndex];
-//
-//                 //Start the new selected camera:
-//                 scanner.start(camera);
-//             }
+// QR code reader
+            var opts = {
+                // Whether to scan continuously for QR codes. If false, use scanner.scan() to
+                // manually scan. If true, the scanner emits the "scan" event when a QR code is
+                // scanned. Default true.
+                continuous: true, // The HTML element to use for the camera's video preview. Must be a <video>
+                // element. When the camera is active, this element will have the "active" CSS
+                // class, otherwise, it will have the "inactive" class. By default, an invisible
+                // element will be created to host the video.
+                video: document.getElementById('preview'),
+                // Whether to horizontally mirror the video preview. This is helpful when trying to
+                // scan a QR code with a user-facing camera. Default true.
+                mirror: true,
+                // Whether to include the scanned image data as part of the scan result. See the
+                // "scan" event for image format details. Default false.
+                captureImage: false,
+                // Only applies to continuous mode. Whether to actively scan when the tab is not
+                // active.
+                // When false, this reduces CPU usage when the tab is not active. Default true.
+                backgroundScan: true,
+                // Only applies to continuous mode. The period, in milliseconds, before the same QR
+                // code will be recognized in succession. Default 5000 (5 seconds).
+                refractoryPeriod: 5000,
+                // Only applies to continuous mode. The period, in rendered frames, between scans. A
+                // lower scan period increases CPU usage but makes scan response faster.
+                // Default 1 (i.e. analyze every frame).
+                scanPeriod: 1
+            };
+
+//The scanner listener - when a code is scanned, do something:
+            let scanner = new Instascan.Scanner(opts);
+            scanner.addListener('scan', function (content) {
+                console.log(content);
+                document.getElementById("content").innerHTML = content;
+            });
+
+//Initialize the cameras:
+Instascan.Camera.getCameras().then(function (cameras) {
+
+    if (cameras.length === 0) {
+        document.getElementById("content").innerHTML = "No cameras found.";
+        return;
+    }
+
+    cameraArray = cameras;      //  REQUIRED for switchCamera()
+    cameraIndex = cameras.length - 1;  //  often the best camera (back/external)
+
+    scanner.start(cameraArray[cameraIndex]);
+
+}).catch(function (e) {
+    document.getElementById("content").innerHTML = "Camera error: " + e;
+});
+//switch to back camera on the phone
+            function switchCamera()
+            {
+                //Cycle through the available cameras:
+                if (cameraIndex < cameraArray.length - 1)
+                {
+                    cameraIndex++;
+                }
+                else
+                {
+                    cameraIndex = 0;
+                }
+
+                //Find the next camera to use:
+                let camera = cameraArray[cameraIndex];
+
+                //Start the new selected camera:
+                scanner.start(camera);
+            }
 
 
 
