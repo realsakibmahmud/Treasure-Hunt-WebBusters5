@@ -120,13 +120,10 @@ function getQuestions()
                 // const answerByThePlayer=document.getElementById("answer_text").value;
                 // setCookie("answerByThePlayer", answerByThePlayer);
 
-               // if (jsonObject.canBeSkipped===true)
-               //  {
-               //      skipQuestion();
-               //  }
-               //  else{
-               //      alert("Question cannot be skipped!");
-               //  }
+               if (jsonObject.canBeSkipped===false)
+                {
+                    alert("Question cannot be skipped!");
+                }
             });
 }
 
@@ -186,12 +183,8 @@ function submitAnswers()
             }
 
             // showPlayerScore();
-            setTimeout(showPlayerScore, 300);
-            //qr code for hint
+            setTimeout(showPlayerScore, 2500);
 
-
-
-          // }
         });
 }
 
