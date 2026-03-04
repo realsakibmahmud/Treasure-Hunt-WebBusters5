@@ -46,476 +46,347 @@ Loading question...
 </div>
 
 <script>
+const session = getCookie("sessionId");
 
-const session = getCookie("sessionId")
+let requiresLocationQuestion = false;
+let locationSentQuestion = false;
+let pendingAnswer = "";
 
-let requiresLocationQuestion = false
-let locationSentQuestion = false
-let pendingAnswer = ""
-let lastQuestionObj = null
+let cameraArray = [];
+let cameraIndex = 0;
 
-let cameraArray = []
-let cameraIndex = 0
+let isSubmitting = false;
 
-let isSubmitting = false
+function showMsg(text, type="info") {
+  const el = document.getElementById("feedback_text");
+  if (!el) return;
 
+  el.textContent = text;
 
-function showMsg(text,type="info")
-{
-const el=document.getElementById("feedback_text")
-if(!el) return
-
-el.textContent=text
-
-if(type==="success") el.style.color="#7CFFB2"
-else if(type==="error") el.style.color="#FF7C7C"
-else el.style.color="#F5F1E6"
+  if (type === "success") el.style.color = "#7CFFB2";
+  else if (type === "error") el.style.color = "#FF7C7C";
+  else el.style.color = "#F5F1E6";
 }
 
-
-function setScoreText(val)
-{
-const scoreEl=document.getElementById("score_container")
-if(scoreEl) scoreEl.textContent=val
+function setScoreText(val) {
+  const scoreEl = document.getElementById("score_container");
+  if (scoreEl) scoreEl.textContent = val;
 }
 
+function setButtonsEnabled(enabled) {
+  const submitBtn = document.getElementById("submit");
+  const skipBtn = document.getElementById("skipButton");
 
-function setButtonsEnabled(enabled)
-{
-const submitBtn=document.getElementById("submit")
-const skipBtn=document.getElementById("skipButton")
-
-if(submitBtn) submitBtn.disabled=!enabled
-if(skipBtn && !skipBtn.disabled) skipBtn.disabled=!enabled
+  if (submitBtn) submitBtn.disabled = !enabled;
+  if (skipBtn && skipBtn.dataset.locked !== "true") skipBtn.disabled = !enabled;
 }
 
+function ensureSessionOrStop() {
+  if (session) return true;
 
-function ensureSessionOrStop()
-{
-if(session) return true
-
-document.getElementById("question_text").textContent="Session missing."
-document.getElementById("answer_text").innerHTML=""
-setScoreText("-")
-
-showMsg("No active session found. Please start the game again.","error")
-
-return false
+  document.getElementById("question_text").textContent = "Session missing.";
+  document.getElementById("answer_text").innerHTML = "";
+  setScoreText("-");
+  showMsg("No active session found. Please start the game again.", "error");
+  return false;
 }
 
+function showPlayerScore() {
+  if (!ensureSessionOrStop()) return;
 
-function showPlayerScore()
-{
-
-if(!ensureSessionOrStop()) return
-
-fetch(`https://codecyprus.org/th/api/score?session=${session}`)
-
-.then(r=>r.json())
-
-.then(obj=>{
-
-if(obj.status && obj.status!=="OK")
-{
-setScoreText("-")
-showMsg("Could not load score","error")
-return
+  fetch(`https://codecyprus.org/th/api/score?session=${session}`)
+    .then(r => r.json())
+    .then(obj => {
+      if (obj.status && obj.status !== "OK") {
+        setScoreText("-");
+        showMsg("Could not load score", "error");
+        return;
+      }
+      if (typeof obj.score === "undefined") {
+        setScoreText("-");
+        return;
+      }
+      setScoreText(obj.score);
+    })
+    .catch(() => showMsg("Network error while loading score", "error"));
 }
 
-if(typeof obj.score==="undefined")
-{
-setScoreText("-")
-return
+function buildAnswerUI(questionObj) {
+  const container = document.getElementById("answer_text");
+  container.innerHTML = "";
+
+  const qType = questionObj.questionType;
+  let answerControl;
+
+  if (qType === "MCQ") {
+    const select = document.createElement("select");
+    select.id = "answer";
+
+    const lines = (questionObj.questionText || "")
+      .split("<br>")
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const optionLines = lines.slice(1);
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select an answer";
+    select.appendChild(placeholder);
+
+    optionLines.forEach(line => {
+      const opt = document.createElement("option");
+      opt.value = line;
+      opt.textContent = line;
+      select.appendChild(opt);
+    });
+
+    answerControl = select;
+  } else if (qType === "INTEGER" || qType === "NUMERIC") {
+    const input = document.createElement("input");
+    input.id = "answer";
+    input.type = "number";
+    input.placeholder = "Enter your answer";
+    answerControl = input;
+  } else {
+    const input = document.createElement("input");
+    input.id = "answer";
+    input.type = "text";
+    input.placeholder = "Enter your answer";
+    answerControl = input;
+  }
+
+  container.appendChild(answerControl);
+
+  const submitButton = document.createElement("button");
+  submitButton.textContent = "Check";
+  submitButton.id = "submit";
+  submitButton.onclick = submitAnswers;
+  container.appendChild(submitButton);
+
+  const skipButton = document.createElement("button");
+  skipButton.textContent = "Skip Question";
+  skipButton.id = "skipButton";
+  skipButton.onclick = skipQuestion;
+  container.appendChild(skipButton);
+
+  if (questionObj.canBeSkipped === false) {
+    skipButton.disabled = true;
+    skipButton.dataset.locked = "true";
+    showMsg("This question cannot be skipped.", "info");
+  }
+
+  const ans = document.getElementById("answer");
+  if (ans) {
+    ans.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitAnswers();
+    });
+  }
 }
 
-setScoreText(obj.score)
-
-})
-
-.catch(()=>showMsg("Network error while loading score","error"))
-
+function getAnswerValue() {
+  const el = document.getElementById("answer");
+  if (!el) return "";
+  return (el.value || "").trim();
 }
 
+function getQuestions() {
+  if (!ensureSessionOrStop()) return;
 
+  fetch(`https://codecyprus.org/th/api/question?session=${session}`)
+    .then(r => r.json())
+    .then(obj => {
+      requiresLocationQuestion = (obj.requiresLocation === true);
+      locationSentQuestion = false;
 
-function buildAnswerUI(questionObj)
-{
+      const displayQuestion = document.getElementById("question_text");
 
-const container=document.getElementById("answer_text")
+      if (obj.status !== "OK") {
+        displayQuestion.textContent = "No questions found!";
+        showMsg("No questions found", "error");
+        return;
+      }
 
-container.innerHTML=""
+      displayQuestion.textContent = (obj.questionText || "").split("<br>")[0].trim();
+      buildAnswerUI(obj);
 
-const qType=questionObj.questionType
-
-let answerControl
-
-
-if(qType==="MCQ")
-{
-
-const select=document.createElement("select")
-
-select.id="answer"
-
-const lines=(questionObj.questionText||"")
-.split("<br>")
-.map(s=>s.trim())
-.filter(Boolean)
-
-const optionLines=lines.slice(1)
-
-const placeholder=document.createElement("option")
-placeholder.value=""
-placeholder.textContent="Select an answer"
-select.appendChild(placeholder)
-
-optionLines.forEach(line=>{
-const opt=document.createElement("option")
-opt.value=line
-opt.textContent=line
-select.appendChild(opt)
-})
-
-answerControl=select
-
+      setTimeout(showPlayerScore, 200);
+    })
+    .catch(() => showMsg("Network error while loading question", "error"));
 }
 
-else if(qType==="INTEGER" || qType==="NUMERIC")
-{
+function submitAnswers() {
+  if (!ensureSessionOrStop()) return;
+  if (isSubmitting) return;
 
-const input=document.createElement("input")
-input.id="answer"
-input.type="number"
-input.placeholder="Enter your answer"
+  const playersAnswers = getAnswerValue();
+  if (!playersAnswers) {
+    showMsg("Please enter/select an answer", "error");
+    return;
+  }
 
-answerControl=input
+  pendingAnswer = playersAnswers;
 
+  if (requiresLocationQuestion && !locationSentQuestion) {
+    isSubmitting = true;
+    setButtonsEnabled(false);
+    sendLocationAndAnswerQuestion();
+    return;
+  }
+
+  doSubmitAnswer(playersAnswers);
 }
 
-else
-{
+function doSubmitAnswer(answerText) {
+  isSubmitting = true;
+  setButtonsEnabled(false);
 
-const input=document.createElement("input")
-input.id="answer"
-input.type="text"
-input.placeholder="Enter your answer"
+  fetch(`https://codecyprus.org/th/api/answer?session=${session}&answer=${encodeURIComponent(answerText)}`)
+    .then(r => r.json())
+    .then(obj => {
 
-answerControl=input
+      if (obj.status && obj.status !== "OK") {
+        showMsg(obj.errorMessages?.[0] || "Answer submission failed", "error");
+        return;
+      }
 
+      if (obj.correct === true) showMsg("Correct ✅", "success");
+      else if (obj.correct === false) showMsg("Not correct ❌", "error");
+      else showMsg(obj.message || "Answer submitted", "info");
+
+      // IMPORTANT: redirect immediately on completion (prevents extra location prompt)
+      if (obj.completed === true) {
+        showMsg("Hunt completed! Redirecting to leaderboard...", "success");
+        setTimeout(() => {
+          window.location.href = "leaderboard.html";
+        }, 400);
+        return;
+      }
+
+      if (obj.correct === true) {
+        getQuestions();
+      }
+
+      setTimeout(showPlayerScore, 300);
+    })
+    .catch(() => showMsg("Network error while submitting answer", "error"))
+    .finally(() => {
+      isSubmitting = false;
+      setButtonsEnabled(true);
+    });
 }
 
+function skipQuestion() {
+  if (isSubmitting) return;
+  if (!ensureSessionOrStop()) return;
 
-container.appendChild(answerControl)
+  isSubmitting = true;
+  setButtonsEnabled(false);
 
+  fetch(`https://codecyprus.org/th/api/skip?session=${session}`)
+    .then(r => r.json())
+    .then(obj => {
+      if (obj.status && obj.status !== "OK") {
+        showMsg(obj.errorMessages?.[0] || "Skip failed", "error");
+        return;
+      }
 
-
-const submitButton=document.createElement("button")
-submitButton.textContent="Check"
-submitButton.id="submit"
-submitButton.onclick=submitAnswers
-
-container.appendChild(submitButton)
-
-
-
-const skipButton=document.createElement("button")
-skipButton.textContent="Skip Question"
-skipButton.id="skipButton"
-skipButton.onclick=skipQuestion
-
-container.appendChild(skipButton)
-
-
-
-if(questionObj.canBeSkipped===false)
-{
-skipButton.disabled=true
-showMsg("This question cannot be skipped.","info")
+      showMsg("Question skipped", "info");
+      getQuestions();
+      setTimeout(showPlayerScore, 300);
+    })
+    .catch(() => showMsg("Network error while skipping", "error"))
+    .finally(() => {
+      isSubmitting = false;
+      setButtonsEnabled(true);
+    });
 }
 
+function sendLocationAndAnswerQuestion() {
+  if (!navigator.geolocation) {
+    showMsg("Geolocation not supported", "error");
+    isSubmitting = false;
+    setButtonsEnabled(true);
+    return;
+  }
 
+  showMsg("Getting your location...", "info");
 
-const ans=document.getElementById("answer")
-
-if(ans)
-{
-ans.addEventListener("keydown",(e)=>{
-if(e.key==="Enter") submitAnswers()
-})
+  navigator.geolocation.getCurrentPosition(
+    showPosition,
+    () => {
+      showMsg("Location permission denied/unavailable", "error");
+      isSubmitting = false;
+      setButtonsEnabled(true);
+    }
+  );
 }
 
+function showPosition(position) {
+  showMsg("Location received. Submitting answer...", "info");
+
+  fetch(`https://codecyprus.org/th/api/location?session=${session}&latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`)
+    .then(r => r.json())
+    .then(obj => {
+      if (obj.status === "OK") {
+        locationSentQuestion = true;
+        doSubmitAnswer(pendingAnswer);
+      } else {
+        showMsg(obj.message || "Location send failed", "error");
+        isSubmitting = false;
+        setButtonsEnabled(true);
+      }
+    })
+    .catch(() => {
+      showMsg("Network error while sending location", "error");
+      isSubmitting = false;
+      setButtonsEnabled(true);
+    });
 }
 
+// Start
+getQuestions();
+showPlayerScore();
 
+// QR
+var opts = {
+  continuous: true,
+  video: document.getElementById("preview"),
+  mirror: true,
+  captureImage: false,
+  backgroundScan: true,
+  refractoryPeriod: 5000,
+  scanPeriod: 1
+};
 
-function getAnswerValue()
-{
-const el=document.getElementById("answer")
+let scanner = new Instascan.Scanner(opts);
 
-if(!el) return ""
+scanner.addListener("scan", function(content) {
+  document.getElementById("content").innerHTML = content;
+  showMsg("Hint scanned ✅", "success");
+});
 
-return (el.value||"").trim()
+Instascan.Camera.getCameras().then(function(cameras) {
+  if (cameras.length === 0) {
+    document.getElementById("content").innerHTML = "No cameras found.";
+    showMsg("No cameras found.", "error");
+    return;
+  }
+
+  cameraArray = cameras;
+  cameraIndex = cameras.length - 1;
+  scanner.start(cameraArray[cameraIndex]);
+}).catch(function(e) {
+  document.getElementById("content").innerHTML = "Camera error: " + e;
+  showMsg("Camera error: " + e, "error");
+});
+
+function switchCamera() {
+  if (cameraIndex < cameraArray.length - 1) cameraIndex++;
+  else cameraIndex = 0;
+
+  scanner.start(cameraArray[cameraIndex]);
 }
-
-
-
-function getQuestions()
-{
-
-if(!ensureSessionOrStop()) return
-
-showMsg("Loading question...")
-
-fetch(`https://codecyprus.org/th/api/question?session=${session}`)
-
-.then(r=>r.json())
-
-.then(obj=>{
-
-requiresLocationQuestion=(obj.requiresLocation===true)
-locationSentQuestion=false
-lastQuestionObj=obj
-
-const displayQuestion=document.getElementById("question_text")
-
-if(obj.status!=="OK")
-{
-displayQuestion.textContent="No questions found!"
-showMsg("No questions found","error")
-return
-}
-
-displayQuestion.textContent=(obj.questionText||"").split("<br>")[0].trim()
-
-buildAnswerUI(obj)
-
-setTimeout(showPlayerScore,200)
-
-})
-
-.catch(()=>showMsg("Network error while loading question","error"))
-
-}
-
-
-
-function submitAnswers()
-{
-
-if(isSubmitting) return
-
-if(!ensureSessionOrStop()) return
-
-const playersAnswers=getAnswerValue()
-
-if(!playersAnswers)
-{
-showMsg("Please enter an answer","error")
-return
-}
-
-pendingAnswer=playersAnswers
-
-isSubmitting=true
-setButtonsEnabled(false)
-
-
-if(requiresLocationQuestion && !locationSentQuestion)
-{
-sendLocationAndAnswerQuestion()
-return
-}
-
-
-fetch(`https://codecyprus.org/th/api/answer?session=${session}&answer=${encodeURIComponent(playersAnswers)}`)
-
-.then(r=>r.json())
-
-.then(obj=>{
-
-if(obj.status && obj.status!=="OK")
-{
-showMsg("Answer submission failed","error")
-return
-}
-
-if(obj.correct===true) showMsg("Correct ✅","success")
-else if(obj.correct===false) showMsg("Not correct ❌","error")
-else showMsg(obj.message || "Answer submitted")
-
-if(obj.completed===false)
-{
-getQuestions()
-}
-else
-{
-window.location.href="leaderboard.html"
-return
-}
-
-setTimeout(showPlayerScore,300)
-
-})
-
-.catch(()=>showMsg("Network error while submitting answer","error"))
-
-.finally(()=>{
-isSubmitting=false
-setButtonsEnabled(true)
-})
-
-}
-
-
-
-function skipQuestion()
-{
-
-if(isSubmitting) return
-
-if(!ensureSessionOrStop()) return
-
-isSubmitting=true
-setButtonsEnabled(false)
-
-fetch(`https://codecyprus.org/th/api/skip?session=${session}`)
-
-.then(r=>r.json())
-
-.then(obj=>{
-
-showMsg("Question skipped")
-
-getQuestions()
-
-setTimeout(showPlayerScore,300)
-
-})
-
-.catch(()=>showMsg("Network error while skipping","error"))
-
-.finally(()=>{
-isSubmitting=false
-setButtonsEnabled(true)
-})
-
-}
-
-
-
-function sendLocationAndAnswerQuestion()
-{
-
-if(!navigator.geolocation)
-{
-showMsg("Geolocation not supported","error")
-return
-}
-
-showMsg("Getting your location...")
-
-navigator.geolocation.getCurrentPosition(showPosition)
-
-}
-
-
-
-function showPosition(position)
-{
-
-showMsg("Location received")
-
-fetch(`https://codecyprus.org/th/api/location?session=${session}&latitude=${position.coords.latitude}&longitude=${position.coords.longitude}`)
-
-.then(r=>r.json())
-
-.then(obj=>{
-
-if(obj.status==="OK")
-{
-locationSentQuestion=true
-submitAnswers()
-}
-else
-{
-showMsg("Location send failed","error")
-}
-
-})
-
-.catch(()=>showMsg("Network error while sending location","error"))
-
-}
-
-
-
-getQuestions()
-showPlayerScore()
-
-
-
-var opts={
-continuous:true,
-video:document.getElementById("preview"),
-mirror:true,
-captureImage:false,
-backgroundScan:true,
-refractoryPeriod:5000,
-scanPeriod:1
-}
-
-
-
-let scanner=new Instascan.Scanner(opts)
-
-
-
-scanner.addListener("scan",function(content){
-
-document.getElementById("content").innerHTML=content
-
-showMsg("Hint scanned","success")
-
-})
-
-
-
-Instascan.Camera.getCameras().then(function(cameras){
-
-if(cameras.length===0)
-{
-document.getElementById("content").innerHTML="No cameras found."
-return
-}
-
-cameraArray=cameras
-cameraIndex=cameras.length-1
-
-scanner.start(cameraArray[cameraIndex])
-
-})
-
-.catch(function(e){
-
-document.getElementById("content").innerHTML="Camera error: "+e
-
-})
-
-
-
-function switchCamera()
-{
-
-if(cameraIndex<cameraArray.length-1)
-cameraIndex++
-
-else
-cameraIndex=0
-
-scanner.start(cameraArray[cameraIndex])
-
-}
-
 </script>
 
 <footer id="footer"></footer>
